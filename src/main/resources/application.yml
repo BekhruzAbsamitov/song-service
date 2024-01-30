@@ -1,0 +1,11 @@
+spring:
+  datasource:
+    password: password
+    username: postgres
+    url: jdbc:postgresql://localhost:5432/song_db
+  jpa:
+    hibernate:
+      ddl-auto: create
+
+server:
+  port: 8081
