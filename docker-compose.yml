@@ -1,0 +1,37 @@
+version: '3'
+
+services:
+  app1:
+    container_name: song-service
+    build:
+      context: .
+    ports:
+      - "8081:8081"
+    depends_on:
+      - db
+    networks:
+      - appnetwork
+  app2:
+    container_name: resource-service
+    build:
+      context: ../resource-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - appnetwork
+  db:
+    image: "postgres"
+    ports:
+      - "5431:5432"
+    environment:
+      POSTGRES_USER: "username"
+      POSTGRES_PASSWORD: "password"
+    networks:
+      - appnetwork
+
+
+networks:
+  appnetwork:
+    driver: bridge
