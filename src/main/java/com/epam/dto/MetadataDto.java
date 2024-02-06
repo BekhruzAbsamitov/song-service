@@ -1,7 +1,5 @@
 package com.epam.dto;
 
-import lombok.*;
-
 public class MetadataDto {
     private String name;
     private String artist;
