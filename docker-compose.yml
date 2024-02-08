@@ -1,7 +1,7 @@
 version: '3'
 
 services:
-  app1:
+  song-service:
     container_name: song-service
     build:
       context: .
@@ -11,12 +11,22 @@ services:
       - db
     networks:
       - appnetwork
-  app2:
+  resourse-service:
     container_name: resource-service
     build:
       context: ../resource-service
     ports:
       - "8080:8080"
+    depends_on:
+      - db
+    networks:
+      - appnetwork
+  eureka-server:
+    container_name: cloud-eureka-discovery-service
+    build:
+      context: ../cloud-eureka-discovery-service
+    ports:
+      - "8761:8761"
     depends_on:
       - db
     networks:
