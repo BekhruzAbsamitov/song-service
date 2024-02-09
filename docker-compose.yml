@@ -1,47 +1,78 @@
-version: '3'
+version: '3.9'
 
 services:
-  song-service:
-    container_name: song-service
-    build:
-      context: .
+  postgres:
+    container_name: postgres
+    image: postgres:14-alpine
     ports:
-      - "8081:8081"
-    depends_on:
-      - db
+      - "5433:5432"
+    volumes:
+      - ~/apps/postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_PASSWORD=${DB_PASSWORD}
+      - POSTGRES_USER=${DB_USERNAME}
     networks:
       - appnetwork
-  resourse-service:
-    container_name: resource-service
-    build:
-      context: ../resource-service
-    ports:
-      - "8080:8080"
-    depends_on:
-      - db
-    networks:
-      - appnetwork
+    restart: unless-stopped
+
   eureka-server:
     container_name: cloud-eureka-discovery-service
     build:
       context: ../cloud-eureka-discovery-service
     ports:
       - "8761:8761"
-    depends_on:
-      - db
-    networks:
-      - appnetwork
-  db:
-    image: "postgres"
-    ports:
-      - "5431:5432"
-    environment:
-      POSTGRES_USER: "username"
-      POSTGRES_PASSWORD: "password"
     networks:
       - appnetwork
 
+  resource-service:
+    container_name: resource-service
+    environment:
+      - DB_URL_RESOURCE=${DB_URL_RESOURCE}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_USERNAME=${DB_USERNAME}
+    build:
+      context: ../resource-service
+    ports:
+      - "8080:8080"
+    depends_on:
+      - eureka-server
+      - postgres
+    networks:
+      - appnetwork
+
+  song-service:
+    container_name: song-service
+    environment:
+      - DB_URL_SONG=${DB_URL_SONG}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_USERNAME=${DB_USERNAME}
+    build:
+      context: .
+    ports:
+      - "8081:8081"
+    depends_on:
+      - eureka-server
+      - postgres
+    networks:
+      - appnetwork
+  pgadmin:
+    container_name: pgadmin
+    image: dpage/pgadmin4
+    environment:
+      PGADMIN_DEFAULT_EMAIL: ${PGADMIN_DEFAULT_EMAIL:-pgadmin4@pgadmin.org}
+      PGADMIN_DEFAULT_PASSWORD: ${PGADMIN_DEFAULT_PASSWORD:-admin}
+      PGADMIN_CONFIG_SERVER_MODE: 'False'
+    volumes:
+      - pgadmin:/var/lib/pgadmin
+    ports:
+      - "5050:80"
+    networks:
+      - appnetwork
+    restart: unless-stopped
 
 networks:
   appnetwork:
     driver: bridge
+
+volumes:
+  pgadmin:
