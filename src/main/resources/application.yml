@@ -9,7 +9,6 @@ spring:
     show-sql: true
   application:
     name: song-service
-
 eureka:
   client:
     service-url:
