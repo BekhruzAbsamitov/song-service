@@ -55,6 +55,23 @@ services:
       - postgres
     networks:
       - appnetwork
+
+  song-service2:
+    container_name: song-service2
+    environment:
+      - DB_URL_SONG=${DB_URL_SONG}
+      - DB_PASSWORD=${DB_PASSWORD}
+      - DB_USERNAME=${DB_USERNAME}
+    build:
+      context: .
+    ports:
+      - "8083:8081"
+    depends_on:
+      - eureka-server
+      - postgres
+    networks:
+      - appnetwork
+
   pgadmin:
     container_name: pgadmin
     image: dpage/pgadmin4
