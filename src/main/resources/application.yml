@@ -8,7 +8,6 @@ spring:
       ddl-auto: create
   application:
     name: song-service
-
 eureka:
   client:
     service-url:
